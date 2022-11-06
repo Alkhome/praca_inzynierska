@@ -162,22 +162,18 @@ class App:
         self.update_instruction()
 
     """
-    1. Podnoszenie ramion do uszu
-    2. zginanie lewej ręki
-    3. zginanie prawej ręki
-    4. Podnoszenie lewej reki do góry
-    5. Podnoszenie prawej ręki do góry
-    6. Podnoszenie lewej ręki do poziomu
-    7. Podnoszenie prawej ręki do poziomu
-    8. Prayer postion (breaststroke)
-    9. Skłon tułowia
+    1. zginanie lewej ręki
+    2. zginanie prawej ręki
+    3. Podnoszenie lewej reki do góry
+    4. Podnoszenie prawej ręki do góry
+    5. Podnoszenie lewej ręki do poziomu
+    6. Podnoszenie prawej ręki do poziomu
+    7. Prayer postion (breaststroke)
+    8. Skłon tułowia
     """
 
     def update_instruction(self):
-        if self.exercise_name == "raise_shoulders":
-            self.instruction_label["text"] = "podnoszenie ramion do uszu"
-
-        elif self.exercise_name == "left_arm_raise":
+        if self.exercise_name == "left_arm_raise":
             self.instruction_label["text"] = "Podnoszenie lewej reki do gory"
         elif self.exercise_name == "right_arm_raise":
             self.instruction_label["text"] = "Podnoszenie prawej reki do gory"
@@ -257,15 +253,14 @@ class VidCapt:
             landmarks = None
             try:
                 """
-                1. Podnoszenie ramion do uszu
-                2. zginanie lewej ręki
-                3. zginanie prawej ręki
-                4. Podnoszenie lewej reki do góry
-                5. Podnoszenie prawej ręki do góry
-                6. Podnoszenie lewej ręki do poziomu
-                7. Podnoszenie prawej ręki do poziomu
-                8. Prayer postion (breaststroke)
-                9. Skłon tułowia
+                1. zginanie lewej ręki
+                2. zginanie prawej ręki
+                3. Podnoszenie lewej reki do góry
+                4. Podnoszenie prawej ręki do góry
+                5. Podnoszenie lewej ręki do poziomu
+                6. Podnoszenie prawej ręki do poziomu
+                7. Prayer postion (breaststroke)
+                8. Skłon tułowia
                 """
                 landmarks = results.pose_landmarks.landmark
                 def raise_both_hands():
@@ -409,10 +404,7 @@ class VidCapt:
                         pass
 
 
-                if self.current_exercise_name == "raise_shoulders":
-                    pass
-
-                elif self.current_exercise_name == "left_arm_raise":
+                if self.current_exercise_name == "left_arm_raise":
                     left_arm_raise()
                 elif self.current_exercise_name == "right_arm_raise":
                     right_arm_raise()
