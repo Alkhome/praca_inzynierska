@@ -225,7 +225,7 @@ class VidCapt:
 
         self.current_exercise_count = 0
         self.stage = "down"
-        self.current_exercise_name = "left_arm_bend"
+        self.current_exercise_name = "right_arm_raise"
 
 
     def get_frame(self): #TODO CHANGE NAME OF THE METHOD
@@ -352,8 +352,42 @@ class VidCapt:
                     elif angle_right_shoulder > 90 and right_wrist[1] > right_shoulder[1] and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
-                            self.current_exercise_name = "None"
+                            self.current_exercise_name = "left_arm_level"
                             self.current_exercise_count = 0
+
+                def left_arm_level():
+                    left_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+                                     landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                    left_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+                    left_wrist = [landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+                    left_mouth = [landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT.value].y]
+
+                    angle_left_shoulder = calculate_angle(left_mouth, left_shoulder, left_elbow)
+                    angle_left_elbow = calculate_angle(left_shoulder, left_elbow, left_wrist)
+
+                    if 90 < angle_left_shoulder < 110 and angle_left_elbow > 160 and self.stage == "down": #TODO wrong values
+                        self.stage = "up"
+                        self.current_exercise_count += 1
+                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
+                    elif angle_left_shoulder > 160 and self.stage == "up":
+                        self.stage = "down"
+                        if self.current_exercise_count == 3:
+                            self.current_exercise_name = "None"
+                            #self.current_exercise_name = "right_arm_level"
+                            self.current_exercise_count = 0
+                    else:
+                        pass
+
+                def right_arm_level():
+                    pass
+
+                def prayer_position():
+                    #UP - kąt pomiędzy łokciami, ramionami i biodrem > 75 i kąt pomiędzy łokieć nadgarstek ramię > 75
+                    #DOWN - kąt pomiędzy łokciami, ramionami i biodrem < 30 i kąt pomiędzy łokieć nadgarstek ramię < 90
+                    pass
 
                 def lean():
                     right_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
@@ -394,9 +428,9 @@ class VidCapt:
                     right_arm_bend()
 
                 elif self.current_exercise_name == "left_arm_level":
-                    pass
+                    left_arm_level()
                 elif self.current_exercise_name == "right_arm_level":
-                    pass
+                    right_arm_level()
 
                 elif self.current_exercise_name == "prayer_position":
                     pass
