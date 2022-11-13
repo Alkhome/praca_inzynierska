@@ -8,6 +8,7 @@ import cv2
 import imutils  # used to resize
 import mediapipe as mp
 import numpy as np
+import os
 from imutils.video import VideoStream
 
 
@@ -77,12 +78,12 @@ class App:
         self.exercise_count = self.feed.current_exercise_count
         self.camera_label = tk.Label(root)
         self.camera_label["bg"] = "#d65ac3"
-        self.camera_label.place(x=screenwidth * 0.01, y=screenheight * 0.01, width=screenwidth * 0.49,
+        self.camera_label.place(x=screenwidth * 0.01, y=screenheight * 0.01, width=screenwidth * 0.48,
                                 height=screenheight * 0.48)
 
         self.img_canvas = tk.Canvas(root)
         self.img_canvas["bg"] = "#000000"
-        self.img_canvas.place(x=screenwidth * 0.501, y=screenheight * 0.01, width=screenwidth * 0.49,
+        self.img_canvas.place(x=screenwidth * 0.5, y=screenheight * 0.01, width=screenwidth * 0.48,
                               height=screenheight * 0.48)
 
         self.instruction_label = tk.Label(root)
@@ -142,13 +143,13 @@ class App:
                           height=screenheight * 0.05)
         skip_button["command"] = self.skip_button_command
 
-        self.pb = ttk.Progressbar(root)
-        self.pb["orient"] = tk.HORIZONTAL
-        self.pb["mode"] = "determinate"
-        self.pb["length"] = screenwidth * 0.32
-        self.pb.place(x=screenwidth * 0.34, y=screenheight * 0.92)
+        pb = ttk.Progressbar(root)
+        pb["orient"] = tk.VERTICAL
+        pb["mode"] = "determinate"
+        pb["length"] = screenheight * 0.48
+        pb.place(x=screenwidth * 0.983, y=screenheight * 0.01)
 
-        self.pb["value"] = 100
+        pb["value"] = 70
 
         self.show_frames()
 
@@ -195,7 +196,7 @@ class App:
             self.instruction_label["text"] = "skłon tułowia"
 
         elif self.exercise_name == "None":
-            self.instruction_label["text"] = "Cwiczenia zostaly ukonczone"
+            self.instruction_label["text"] = "Kalibracja została ukończona"
 
         else:
             pass
@@ -381,14 +382,14 @@ class VidCapt:
                         pass
 
                 def right_arm_level():
-                    right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
-                                     landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-                    right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
-                                  landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-                    right_wrist = [landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].x,
-                                  landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-                    right_mouth = [landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT.value].x,
-                                  landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT.value].y]
+                    right_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+                                     landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                    right_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+                    right_wrist = [landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+                    right_mouth = [landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT.value].y]
 
                     angle_right_shoulder = calculate_angle(right_mouth, right_shoulder, right_elbow)
                     angle_right_elbow = calculate_angle(right_shoulder, right_elbow, right_wrist)

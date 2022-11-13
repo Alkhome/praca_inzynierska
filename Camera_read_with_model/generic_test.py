@@ -77,12 +77,12 @@ class App:
         self.exercise_count = self.feed.current_exercise_count
         self.camera_label = tk.Label(root)
         self.camera_label["bg"] = "#d65ac3"
-        self.camera_label.place(x=screenwidth * 0.01, y=screenheight * 0.01, width=screenwidth * 0.48,
+        self.camera_label.place(x=screenwidth * 0.01, y=screenheight * 0.01, width=screenwidth * 0.49,
                                 height=screenheight * 0.48)
 
         self.img_canvas = tk.Canvas(root)
         self.img_canvas["bg"] = "#000000"
-        self.img_canvas.place(x=screenwidth * 0.5, y=screenheight * 0.01, width=screenwidth * 0.48,
+        self.img_canvas.place(x=screenwidth * 0.501, y=screenheight * 0.01, width=screenwidth * 0.49,
                               height=screenheight * 0.48)
 
         self.instruction_label = tk.Label(root)
@@ -142,13 +142,13 @@ class App:
                           height=screenheight * 0.05)
         skip_button["command"] = self.skip_button_command
 
-        pb = ttk.Progressbar(root)
-        pb["orient"] = tk.VERTICAL
-        pb["mode"] = "determinate"
-        pb["length"] = screenheight * 0.48
-        pb.place(x=screenwidth * 0.983, y=screenheight * 0.01)
+        self.pb = ttk.Progressbar(root)
+        self.pb["orient"] = tk.HORIZONTAL
+        self.pb["mode"] = "determinate"
+        self.pb["length"] = screenwidth * 0.32
+        self.pb.place(x=screenwidth * 0.34, y=screenheight * 0.92)
 
-        pb["value"] = 70
+        self.pb["value"] = 100
 
         self.show_frames()
 
@@ -375,19 +375,59 @@ class VidCapt:
                     elif angle_left_shoulder > 160 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
-                            self.current_exercise_name = "None"
-                            #self.current_exercise_name = "right_arm_level"
+                            self.current_exercise_name = "right_arm_level"
                             self.current_exercise_count = 0
                     else:
                         pass
 
                 def right_arm_level():
-                    pass
+                    right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
+                                     landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+                    right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+                    right_wrist = [landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+                    right_mouth = [landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT.value].x,
+                                  landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT.value].y]
+
+                    angle_right_shoulder = calculate_angle(right_mouth, right_shoulder, right_elbow)
+                    angle_right_elbow = calculate_angle(right_shoulder, right_elbow, right_wrist)
+
+                    if 90 < angle_right_shoulder < 110 and angle_right_elbow > 160 and self.stage == "down":
+                        self.stage = "up"
+                        self.current_exercise_count += 1
+                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
+                    elif angle_right_shoulder > 160 and self.stage == "up":
+                        self.stage = "down"
+                        if self.current_exercise_count == 3:
+                            self.current_exercise_name = "prayer_position"
+                            self.current_exercise_count = 0
+                    else:
+                        pass
 
                 def prayer_position():
+                    right_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+                                      landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                    right_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
+                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+                    right_wrist = [landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
+                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+                    right_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
+                                 landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].y]
+
+                    angle_right_elbow = calculate_angle(right_shoulder, right_elbow, right_wrist)
+                    angle_right_shoulder = calculate_angle(right_hip, right_shoulder, right_elbow)
                     #UP - kąt pomiędzy łokciami, ramionami i biodrem > 75 i kąt pomiędzy łokieć nadgarstek ramię > 75
                     #DOWN - kąt pomiędzy łokciami, ramionami i biodrem < 30 i kąt pomiędzy łokieć nadgarstek ramię < 90
-                    pass
+                    if angle_right_shoulder > 75 and angle_right_elbow > 75 and self.stage == "down":
+                        self.stage = "up"
+                        self.current_exercise_count += 1
+                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
+                    elif angle_right_shoulder < 30 and angle_right_elbow < 90 and self.stage == "up":
+                        self.stage = "down"
+                        if self.current_exercise_count == 3:
+                            self.current_exercise_name = "lean"
+                            self.current_exercise_count = 0
 
                 def lean():
                     right_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
@@ -433,7 +473,7 @@ class VidCapt:
                     right_arm_level()
 
                 elif self.current_exercise_name == "prayer_position":
-                    pass
+                    prayer_position()
 
                 elif self.current_exercise_name == "lean":
                     lean()
