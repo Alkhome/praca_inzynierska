@@ -1,7 +1,5 @@
-import sys
 import tkinter as tk
 import tkinter.font as tkFont
-from datetime import time
 from tkinter import ttk
 
 import PIL.Image
@@ -13,7 +11,6 @@ import numpy as np
 import os
 from imutils.video import VideoStream
 
-calibration_result = []
 
 nose = None
 left_eye_inner = None
@@ -64,7 +61,7 @@ def calculate_angle(a=None, b=None, c=None):
     return angle
 
 
-class CalibrationApp:
+class ExerciseApp:
 
     def __init__(self, root, vid_src=0):
         # setting title
@@ -179,7 +176,6 @@ class CalibrationApp:
         if self.exercise_name == "left_arm_bend":
             self.instruction_label["text"] = "Zginanie lewej reki"
         elif self.exercise_name == "right_arm_bend":
-            print(calibration_result)
             self.instruction_label["text"] = "Zginanie prawej reki"
 
         elif self.exercise_name == "left_arm_raise":
@@ -200,8 +196,6 @@ class CalibrationApp:
 
         elif self.exercise_name == "None":
             self.instruction_label["text"] = "Cwiczenia zostaly ukonczone"
-            #TODO dodac zapis do pliku
-            print(calibration_result)
 
         else:
             pass
@@ -224,7 +218,9 @@ class CalibrationApp:
 class VidCapt:
 
     def __init__(self, width, height, vid_src=0):
-        self.cap = VideoStream(src=vid_src).start()
+        #self.cap = VideoStream(src=vid_src).start()
+        self.vid = cv2.VideoCapture(0)
+        _, self.cap = self.vid.read()
         self.width = int(width * 0.48)
         self.height = int(height * 0.48)
 
@@ -234,10 +230,14 @@ class VidCapt:
 
         self.current_exercise_count = 0
         self.stage = "down"
-        self.current_exercise_name = "left_arm_bend"
+        self.current_exercise_name = "right_arm_raise"
+
+    def release_feed(self):
+        self.vid.release()
 
     def get_frame(self): #TODO CHANGE NAME OF THE METHOD
-        frame = cv2.cvtColor(self.cap.read(), cv2.COLOR_BGR2RGB)
+        _, self.cap = self.vid.read()
+        frame = cv2.cvtColor(self.cap, cv2.COLOR_BGR2RGB)
         frame = cv2.flip(frame, 1)
 
         with self.mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -260,19 +260,10 @@ class VidCapt:
             # Extract landmarks
             landmarks = None
             try:
-                """
-                1. zginanie lewej ręki
-                2. zginanie prawej ręki
-                3. Podnoszenie lewej reki do góry
-                4. Podnoszenie prawej ręki do góry
-                5. Podnoszenie lewej ręki do poziomu
-                6. Podnoszenie prawej ręki do poziomu
-                7. Prayer postion (breaststroke)
-                8. Skłon tułowia
-                """
                 landmarks = results.pose_landmarks.landmark
 
-                def left_arm_bend(): #self.params[0]
+                def left_arm_bend():
+
                     left_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
                                       landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
                     left_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
@@ -281,16 +272,19 @@ class VidCapt:
                                    landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
 
                     angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
-                    temp_calibration_results = [0] * 10
-                    t_end = time.time() + 10  #TODO change to 60 sekund petla
-                    while time.time() < t_end:  # czemu nie ma skonczenia szybciej? Zeby ktos mogl powtarzac, jak mu za pierwszym razem nie wyszlo, to nie tak, ze logika zbyt skomplikowana
-                        temp_calibration_results.append(angle)
-                    temp_calibration_results = temp_calibration_results[-7:-2]
-                    calibration_result.append(round(sum(temp_calibration_results)/5), 2)
-                    print(calibration_result)
+                    if angle < 90 and self.stage == "down":
+                        self.stage = "up"
+                        self.current_exercise_count += 1
+                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
+                    elif angle > 90 and self.stage == "up":
+                        self.stage = "down"
+                        if self.current_exercise_count == 3:
+                            self.current_exercise_name = "right_arm_bend"
+                            self.current_exercise_count = 0
+                    else:
+                        pass
 
-
-                def right_arm_bend(): #self.params[1]
+                def right_arm_bend():
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
                                       landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                     right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
@@ -311,7 +305,7 @@ class VidCapt:
                     else:
                         pass
 
-                def left_arm_raise(): #self.params[2] and self.params[3]
+                def left_arm_raise():
                     left_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
                     left_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
@@ -336,7 +330,7 @@ class VidCapt:
                     else:
                         pass
 
-                def right_arm_raise(): # self.params[4] and self.params[5]
+                def right_arm_raise():
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
                                       landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                     right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
@@ -498,5 +492,5 @@ class VidCapt:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = CalibrationApp(root)
+    app = ExerciseApp(root)
     root.mainloop()
