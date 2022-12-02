@@ -1,9 +1,11 @@
 import tkinter as tk
 import tkinter.font as tkFont
+import os
 
-class App:
+
+class InstructionApp:
     def __init__(self, root):
-        root.title("Menu Glowne")
+        root.title("DUUPOTEST")
         # setting window size
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
@@ -65,7 +67,7 @@ class App:
         back_to_menu_button["font"] = ft
         back_to_menu_button["fg"] = "#000000"
         back_to_menu_button["justify"] = "center"
-        back_to_menu_button["text"] = "Wyjdz z programu"
+        back_to_menu_button["text"] = "Back to menu"
         back_to_menu_button["relief"] = "groove"
         back_to_menu_button.place(x=screenwidth * 0.01, y=screenheight * 0.17, width=screenwidth * 0.32,
                           height=screenheight * 0.05)
@@ -73,13 +75,19 @@ class App:
 
     def back_to_menu_button_command(self):
         print("EXIT")
-        exit()
+        os.system("python main_menu.py")
+        #exit()
 
     def calibrate_button_command(self):
         print("CALIBRATE")
+        os.system("python instruction.py")
+
+        exit()
 
     def instruction_button_command(self):
         print("INSTRUCTION")
+        os.system("python main_menu.py")
+        exit()
 
     def start_exercise_button_command(self):
         print("START EXERCISES")
@@ -87,5 +95,5 @@ class App:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = App(root)
+    app = InstructionApp(root)
     root.mainloop()
