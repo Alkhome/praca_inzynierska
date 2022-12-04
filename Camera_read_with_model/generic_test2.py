@@ -224,11 +224,12 @@ class ExerciseApp:
 
     def stop_button_command(self):
         # TODO change from exit to freeze
-        exit()
+        self.feed.stop_exercises()
         print("stop/resume")
 
     def skip_button_command(self):
-        print("skip")
+        self.feed.skip_exercise()
+        print("Skipped")
 
 
 class VidCapt:
@@ -263,8 +264,9 @@ class VidCapt:
         self.lean_hands_calibration_results = []
         self.lean_body_calibration_results = []
 
+        self.skipped_exercises = [False] * 8
 
-        self.skipped = False
+
         self.stopped = 0
         self.current_exercise_temp = None
         self.total_execrises_done = 0
@@ -273,11 +275,12 @@ class VidCapt:
 
     def skip_exercise(self):
         if self.current_exercise_name != EXERCISES[8]:
+            self.skipped_exercises[EXERCISES.index(self.current_exercise_name)] = True
             new_index = EXERCISES.index(self.current_exercise_name) + 1
             self.current_exercise_name = EXERCISES[new_index]
             self.current_exercise_count = 0
-            self.skipped = True
             self.total_execrises_done += 1
+
             #TODO dodac ze jak skipped gdzies poszlo ,to wynik jest 255 w zapisie
             print("Skipped")
         else:
@@ -308,51 +311,75 @@ class VidCapt:
     def save_to_file(self):
         #TODO save to file
         val0 = self.calculate_mean(self.left_arm_bend_calibration_results, reversed=True)
-        if val0 < 40:
+        if self.skipped_exercises[0]:
+            val0 = 255
+        elif val0 < 40:
             val0 = 40
 
         val1 = self.calculate_mean(self.right_arm_bend_calibration_results, reversed=True)
-        if val1 < 40:
+        if self.skipped_exercises[1]:
+            val1 = 255
+        elif val1 < 40:
             val1 = 40
 
         val2 = self.calculate_mean(self.left_arm_raise_shoulder_calibration_results, reversed=True)
-        if val2 < 50:
+        if self.skipped_exercises[2]:
+            val2 = 255
+        elif val2 < 50:
             val2 = 50
 
         val3 = self.calculate_mean(self.left_arm_raise_elbow_calibration_results, reversed=False)
-        if val3 > 175:
+        if self.skipped_exercises[2]:
+            val3 = 255
+        elif val3 > 175:
             val3 = 175
 
         val4 = self.calculate_mean(self.right_arm_raise_shoulder_calibration_results, reversed=True)
-        if val4 < 50:
+        if self.skipped_exercises[3]:
+            val4 = 255
+        elif val4 < 50:
             val4 = 50
 
         val5 = self.calculate_mean(self.right_arm_raise_elbow_calibration_results, reversed=False)
-        if val5 > 175:
+        if self.skipped_exercises[3]:
+            val5 = 255
+        elif val5 > 175:
             val5 = 175
         
         val6 = self.calculate_mean(self.left_arm_level_shoulder_calibration_results, reversed=False)
-        if val6 > 90:
+        if self.skipped_exercises[4]:
+            val6 = 255
+        elif val6 > 90:
             val6 = 90
 
         val7 = self.calculate_mean(self.left_arm_level_elbow_calibration_results, reversed=False)
-        if val7 > 175:
+        if self.skipped_exercises[4]:
+            val7 = 255
+        elif val7 > 175:
             val7 = 175
         
         val8 = self.calculate_mean(self.right_arm_level_shoulder_calibration_results, reversed=False)
-        if val8 > 90:
+        if self.skipped_exercises[5]:
+            val8 = 255
+        elif val8 > 90:
             val8 = 90
 
         val9 = self.calculate_mean(self.right_arm_level_elbow_calibration_results, reversed=False)
-        if val9 > 175:
+        if self.skipped_exercises[5]:
+            val9 = 255
+        elif val9 > 175:
             val9 = 175
         
         val10 = self.calculate_mean(self.prayer_position_shoulder_calibration_results, reversed=False) #max 80
-        if val10 > 80:
+        if self.skipped_exercises[6]:
+            val10 = 255
+        elif val10 > 80:
             val10 = 80
 
         val11 = self.calculate_mean(self.prayer_position_elbow_calibration_results, reversed=False) #max 175
-        if val11 > 175:
+        if self.skipped_exercises[6]:
+            val11 = 255
+        elif val11 > 175:
             val11 = 175
 
         val12 = self.calculate_mean(self.lean_hands_calibration_results, reversed=True)

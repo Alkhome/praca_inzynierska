@@ -15,3 +15,6 @@ x = 11
 #desired = 18
 
 print(x + (3 - x % 3))
+
+list = [False] * 3
+print(list)
