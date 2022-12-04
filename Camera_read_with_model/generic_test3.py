@@ -12,19 +12,18 @@ import imutils  # used to resize
 import mediapipe as mp
 import numpy as np
 import os
-import file_mod as fm
 from imutils.video import VideoStream
 
 EXERCISES = [
-    "left_arm_bend",
-    "right_arm_bend",
-    "left_arm_raise",
-    "right_arm_raise",
-    "left_arm_level",
-    "right_arm_level",
-    "prayer_position",
-    "lean",
-    "done"
+"left_arm_bend",
+"right_arm_bend",
+"left_arm_raise",
+"right_arm_raise",
+"left_arm_level",
+"right_arm_level",
+"prayer_position",
+"lean",
+"done"
 ]
 
 nose = None
@@ -110,7 +109,7 @@ class ExerciseApp:
         self.instruction_label["text"] = "Instrukcje"
         self.instruction_label["relief"] = "groove"
         self.instruction_label.place(x=screenwidth * 0.01, y=screenheight * 0.5, width=screenwidth * 0.98,
-                                     height=screenheight * 0.35)
+                                height=screenheight * 0.35)
 
         return_button = tk.Button(root)
         return_button["activebackground"] = "#955d5d"
@@ -163,7 +162,7 @@ class ExerciseApp:
         self.pb["length"] = screenwidth * 0.32
         self.pb.place(x=screenwidth * 0.34, y=screenheight * 0.92)
 
-        self.pb["value"] = 0
+        self.pb["value"] = 100
 
         self.show_frames()
 
@@ -175,7 +174,6 @@ class ExerciseApp:
         self.camera_label.after(20, self.show_frames)
         self.exercise_name = self.feed.current_exercise_name
         self.update_instruction()
-        self.pb["value"] = self.feed.update_pbar()
 
     """
     1. zginanie lewej ręki
@@ -189,28 +187,28 @@ class ExerciseApp:
     """
 
     def update_instruction(self):
-        if self.exercise_name == EXERCISES[0]:
+        if self.exercise_name == "left_arm_bend":
             self.instruction_label["text"] = "Zginanie lewej reki"
-        elif self.exercise_name == EXERCISES[1]:
+        elif self.exercise_name == "right_arm_bend":
             self.instruction_label["text"] = "Zginanie prawej reki"
 
-        elif self.exercise_name == EXERCISES[2]:
+        elif self.exercise_name == "left_arm_raise":
             self.instruction_label["text"] = "Podnoszenie lewej reki do gory"
-        elif self.exercise_name == EXERCISES[3]:
+        elif self.exercise_name == "right_arm_raise":
             self.instruction_label["text"] = "Podnoszenie prawej reki do gory"
 
-        elif self.exercise_name == EXERCISES[4]:
+        elif self.exercise_name == "left_arm_level":
             self.instruction_label["text"] = "Podnoszenie lewej ręki do poziomu"
-        elif self.exercise_name == EXERCISES[5]:
+        elif self.exercise_name == "right_arm_level":
             self.instruction_label["text"] = "Podnoszenie prawej ręki do poziomu"
 
-        elif self.exercise_name == EXERCISES[6]:
+        elif self.exercise_name == "prayer_position":
             self.instruction_label["text"] = "Prayer position"
 
-        elif self.exercise_name == EXERCISES[7]:
+        elif self.exercise_name == "lean":
             self.instruction_label["text"] = "skłon tułowia"
 
-        elif self.exercise_name == EXERCISES[8]:
+        elif self.exercise_name == "None":
             self.instruction_label["text"] = "Cwiczenia zostaly ukonczone"
 
         else:
@@ -234,7 +232,7 @@ class ExerciseApp:
 class VidCapt:
 
     def __init__(self, width, height, vid_src=0):
-        # self.cap = VideoStream(src=vid_src).start()
+        #self.cap = VideoStream(src=vid_src).start()
         self.vid = cv2.VideoCapture(0)
         _, self.cap = self.vid.read()
         self.width = int(width * 0.48)
@@ -257,16 +255,16 @@ class VidCapt:
         self.left_arm_level_shoulder_calibration_results = []
         self.left_arm_level_elbow_calibration_results = []
         self.right_arm_level_shoulder_calibration_results = []
-        self.right_arm_level_elbow_calibration_results = []
+        self.right_arm_level_elbow_results = []
         self.prayer_position_shoulder_calibration_results = []
         self.prayer_position_elbow_calibration_results = []
         self.lean_hands_calibration_results = []
         self.lean_body_calibration_results = []
 
+
         self.skipped = False
         self.stopped = 0
         self.current_exercise_temp = None
-        self.total_execrises_done = 0
 
         self.is_done = False
 
@@ -276,8 +274,7 @@ class VidCapt:
             self.current_exercise_name = EXERCISES[new_index]
             self.current_exercise_count = 0
             self.skipped = True
-            self.total_execrises_done += 1
-            # TODO dodac ze jak skipped gdzies poszlo ,to wynik jest 255 w zapisie
+            #TODO dodac ze jak skipped gdzies poszlo ,to wynik jest 255 w zapisie
             print("Skipped")
         else:
             pass
@@ -295,75 +292,34 @@ class VidCapt:
     def release_feed(self):
         self.vid.release()
 
-    def update_pbar(self):
-        return int((self.total_execrises_done / 8) * 100)
-
     def calculate_mean(self, list, reversed=False):
         list.sort(reverse=reversed)
         list = list[-10:-5]
-        mean = sum(list) / len(list)
+        mean = sum(list)/len(list)
         return int(mean)
 
     def save_to_file(self):
-        # TODO save to file
+        #TODO calculate mean of every list and pass arguments to fm.c
         val0 = self.calculate_mean(self.left_arm_bend_calibration_results, reversed=True)
-        if val0 < 40:
-            val0 = 40
-
         val1 = self.calculate_mean(self.right_arm_bend_calibration_results, reversed=True)
-        if val1 < 40:
-            val1 = 40
-
         val2 = self.calculate_mean(self.left_arm_raise_shoulder_calibration_results, reversed=True)
-        if val2 < 50:
-            val2 = 50
-
-        val3 = self.calculate_mean(self.left_arm_raise_elbow_calibration_results, reversed=False)
-        if val3 > 175:
-            val3 = 175
-
+        val3 = self.calculate_mean(self.left_arm_raise_elbow_calibration_results, reversed=True)
         val4 = self.calculate_mean(self.right_arm_raise_shoulder_calibration_results, reversed=True)
-        if val4 < 50:
-            val4 = 50
-
-        val5 = self.calculate_mean(self.right_arm_raise_elbow_calibration_results, reversed=False)
-        if val5 > 175:
-            val5 = 175
-
-        val6 = self.calculate_mean(self.left_arm_level_shoulder_calibration_results, reversed=False)
-        if val6 > 90:
-            val6 = 90
-
-        val7 = self.calculate_mean(self.left_arm_level_elbow_calibration_results, reversed=False)
-        if val7 > 175:
-            val7 = 175
-
-        val8 = self.calculate_mean(self.right_arm_level_shoulder_calibration_results, reversed=False)
-        if val8 > 90:
-            val8 = 90
-
-        val9 = self.calculate_mean(self.right_arm_level_elbow_calibration_results, reversed=False)
-        if val9 > 175:
-            val9 = 175
-
-        val10 = self.calculate_mean(self.prayer_position_shoulder_calibration_results, reversed=False)  # max 80
-        if val10 > 80:
-            val10 = 80
-
-        val11 = self.calculate_mean(self.prayer_position_elbow_calibration_results, reversed=False)  # max 175
-        if val11 > 175:
-            val11 = 175
-
+        val5 = self.calculate_mean(self.right_arm_raise_elbow_calibration_results, reversed=True)
+        val6 = self.calculate_mean(self.left_arm_level_shoulder_calibration_results, reversed=True)
+        val7 = self.calculate_mean(self.left_arm_level_elbow_calibration_results, reversed=True)
+        val8 = self.calculate_mean(self.right_arm_level_shoulder_calibration_results, reversed=True)
+        val9 = self.calculate_mean(self.right_arm_level_elbow_results, reversed=True)
+        val10 = self.calculate_mean(self.prayer_position_shoulder_calibration_results, reversed=True)
+        val11 = self.calculate_mean(self.prayer_position_elbow_calibration_results, reversed=True)
         val12 = self.calculate_mean(self.lean_hands_calibration_results, reversed=True)
-        val12 = 255  # TODO CHANGE
         val13 = self.calculate_mean(self.lean_body_calibration_results, reversed=True)
-        val13 = 255  # TODO CHANGE
         val14 = 0
 
         new_vals_list = [val0, val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14]
-        fm.save_to_file(new_vals_list)
+        print(new_vals_list)
 
-    def get_frame(self):  # TODO CHANGE NAME OF THE METHOD
+    def get_frame(self): #TODO CHANGE NAME OF THE METHOD
         _, self.cap = self.vid.read()
         frame = cv2.cvtColor(self.cap, cv2.COLOR_BGR2RGB)
         frame = cv2.flip(frame, 1)
@@ -404,11 +360,10 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[1]
-                        self.total_execrises_done += 1
 
-                    # if len(self.left_arm_bend_calibration_results) > 50:
-                    #     self.left_arm_bend_calibration_results.sort(reverse=True)
-                    #     self.left_arm_bend_calibration_results = self.left_arm_bend_calibration_results[30:]
+                    if len(self.left_arm_bend_calibration_results) > 50:
+                        self.left_arm_bend_calibration_results.sort(reverse=True)
+                        self.left_arm_bend_calibration_results = self.left_arm_bend_calibration_results[30:]
 
                 def right_arm_bend():
 
@@ -425,11 +380,10 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[2]
-                        self.total_execrises_done += 1
 
-                    # if len(self.right_arm_bend_calibration_results) > 50:
-                    #     self.right_arm_bend_calibration_results.sort(reverse=True)
-                    #     self.right_arm_bend_calibration_results = self.right_arm_bend_calibration_results[30:]
+                    if len(self.right_arm_bend_calibration_results) > 50:
+                        self.right_arm_bend_calibration_results.sort(reverse=True)
+                        self.right_arm_bend_calibration_results = self.right_arm_bend_calibration_results[30:]
 
                 def left_arm_raise():
 
@@ -451,16 +405,15 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[3]
-                        self.total_execrises_done += 1
 
-                    # if len(self.left_arm_raise_shoulder_calibration_results) > 50:
-                    #     self.left_arm_raise_shoulder_calibration_results.sort(reverse=True) #TODO sprawdzic reversed wszedzie
-                    #     self.left_arm_raise_elbow_calibration_results = self.left_arm_raise_elbow_calibration_results[
-                    #                                                     30:]
-                    #
-                    #     self.left_arm_raise_shoulder_calibration_results.sort(reverse=True)
-                    #     self.left_arm_raise_elbow_calibration_results = self.left_arm_raise_elbow_calibration_results[
-                    #                                                     30:]
+                    if len(self.left_arm_raise_shoulder_calibration_results) > 50:
+                        self.left_arm_raise_shoulder_calibration_results.sort(reverse=True) #TODO sprawdzic reversed wszedzie
+                        self.left_arm_raise_elbow_calibration_results = self.left_arm_raise_elbow_calibration_results[
+                                                                        30:]
+
+                        self.left_arm_raise_shoulder_calibration_results.sort(reverse=True)
+                        self.left_arm_raise_elbow_calibration_results = self.left_arm_raise_elbow_calibration_results[
+                                                                        30:]
 
                 def right_arm_raise():
 
@@ -482,17 +435,16 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[4]
-                        self.total_execrises_done += 1
 
-                    # if len(self.right_arm_raise_shoulder_calibration_results) > 50:
-                    #     self.right_arm_raise_shoulder_calibration_results.sort(
-                    #         reverse=True)  # TODO sprawdzic reversed wszedzie
-                    #     self.right_arm_raise_elbow_calibration_results = self.right_arm_raise_elbow_calibration_results[
-                    #                                                     30:]
-                    #
-                    #     self.right_arm_raise_shoulder_calibration_results.sort(reverse=True)
-                    #     self.right_arm_raise_elbow_calibration_results = self.right_arm_raise_elbow_calibration_results[
-                    #                                                     30:]
+                    if len(self.right_arm_raise_shoulder_calibration_results) > 50:
+                        self.right_arm_raise_shoulder_calibration_results.sort(
+                            reverse=True)  # TODO sprawdzic reversed wszedzie
+                        self.right_arm_raise_elbow_calibration_results = self.right_arm_raise_elbow_calibration_results[
+                                                                        30:]
+
+                        self.right_arm_raise_shoulder_calibration_results.sort(reverse=True)
+                        self.right_arm_raise_elbow_calibration_results = self.right_arm_raise_elbow_calibration_results[
+                                                                        30:]
 
                 def left_arm_level():
 
@@ -514,17 +466,16 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[5]
-                        self.total_execrises_done += 1
 
-                    # if len(self.left_arm_level_shoulder_calibration_results) > 50:
-                    #     self.left_arm_level_shoulder_calibration_results.sort(
-                    #         reverse=True)  # TODO sprawdzic reversed wszedzie
-                    #     self.left_arm_level_elbow_calibration_results = self.left_arm_level_elbow_calibration_results[
-                    #                                                     30:]
-                    #
-                    #     self.left_arm_level_shoulder_calibration_results.sort(reverse=True)
-                    #     self.left_arm_level_elbow_calibration_results = self.left_arm_level_elbow_calibration_results[
-                    #                                                     30:]
+                    if len(self.left_arm_level_shoulder_calibration_results) > 50:
+                        self.left_arm_level_shoulder_calibration_results.sort(
+                            reverse=True)  # TODO sprawdzic reversed wszedzie
+                        self.left_arm_level_elbow_calibration_results = self.left_arm_level_elbow_calibration_results[
+                                                                        30:]
+
+                        self.left_arm_level_shoulder_calibration_results.sort(reverse=True)
+                        self.left_arm_level_elbow_calibration_results = self.left_arm_level_elbow_calibration_results[
+                                                                        30:]
 
                 def right_arm_level():
 
@@ -546,17 +497,16 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[6]
-                        self.total_execrises_done += 1
 
-                    # if len(self.right_arm_level_shoulder_calibration_results) > 50:
-                    #     self.right_arm_level_shoulder_calibration_results.sort(
-                    #         reverse=True)  # TODO sprawdzic reversed wszedzie
-                    #     self.right_arm_level_elbow_calibration_results = self.right_arm_level_elbow_calibration_results[
-                    #                                                     30:]
-                    #
-                    #     self.right_arm_level_shoulder_calibration_results.sort(reverse=True)
-                    #     self.right_arm_level_elbow_calibration_results = self.right_arm_level_elbow_calibration_results[
-                    #                                                     30:]
+                    if len(self.right_arm_level_shoulder_calibration_results) > 50:
+                        self.right_arm_level_shoulder_calibration_results.sort(
+                            reverse=True)  # TODO sprawdzic reversed wszedzie
+                        self.right_arm_level_elbow_calibration_results = self.right_arm_level_elbow_calibration_results[
+                                                                        30:]
+
+                        self.right_arm_level_shoulder_calibration_results.sort(reverse=True)
+                        self.right_arm_level_elbow_calibration_results = self.right_arm_level_elbow_calibration_results[
+                                                                        30:]
 
                 def prayer_position():
 
@@ -578,17 +528,16 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[7]
-                        self.total_execrises_done += 1
 
-                    # if len(self.prayer_position_shoulder_calibration_results) > 50:
-                    #     self.prayer_position_shoulder_calibration_results.sort(
-                    #         reverse=True)  # TODO sprawdzic reversed wszedzie
-                    #     self.prayer_position_elbow_calibration_results = self.prayer_position_elbow_calibration_results[
-                    #                                                      30:]
-                    #
-                    #     self.prayer_position_shoulder_calibration_results.sort(reverse=True)
-                    #     self.prayer_position_elbow_calibration_results = self.prayer_position_elbow_calibration_results[
-                    #                                                      30:]
+                    if len(self.prayer_position_shoulder_calibration_results) > 50:
+                        self.prayer_position_shoulder_calibration_results.sort(
+                            reverse=True)  # TODO sprawdzic reversed wszedzie
+                        self.prayer_position_elbow_calibration_results = self.prayer_position_elbow_calibration_results[
+                                                                         30:]
+
+                        self.prayer_position_shoulder_calibration_results.sort(reverse=True)
+                        self.prayer_position_elbow_calibration_results = self.prayer_position_elbow_calibration_results[
+                                                                         30:]
 
                 def lean():
 
@@ -610,17 +559,16 @@ class VidCapt:
                     if keyboard.is_pressed('space'):
                         time.sleep(2)
                         self.current_exercise_name = EXERCISES[8]
-                        self.total_execrises_done += 1
 
-                    # if len(self.lean_hands_calibration_results) > 50:
-                    #     self.lean_hands_calibration_results.sort(
-                    #         reverse=True)  # TODO sprawdzic reversed wszedzie
-                    #     self.lean_hands_calibration_results = self.lean_hands_calibration_results[
-                    #                                                      30:]
-                    #
-                    #     self.lean_body_calibration_results.sort(reverse=True)
-                    #     self.lean_body_calibration_results = self.lean_body_calibration_results[
-                    #                                                      30:]
+                    if len(self.lean_hands_calibration_results) > 50:
+                        self.lean_hands_calibration_results.sort(
+                            reverse=True)  # TODO sprawdzic reversed wszedzie
+                        self.lean_hands_calibration_results = self.lean_hands_calibration_results[
+                                                                         30:]
+
+                        self.lean_body_calibration_results.sort(reverse=True)
+                        self.lean_body_calibration_results = self.lean_body_calibration_results[
+                                                                         30:]
 
                 if self.current_exercise_name == EXERCISES[2]:
                     left_arm_raise()
@@ -647,7 +595,7 @@ class VidCapt:
 
                     if self.is_done != True:
                         self.is_done = True
-                        self.save_to_file()
+                        #TODO self.save_to_file
                     else:
                         pass
 

@@ -163,7 +163,7 @@ class App:
         self.pb["length"] = screenwidth * 0.32
         self.pb.place(x=screenwidth * 0.34, y=screenheight * 0.92)
 
-        self.pb["value"] = 100
+        self.pb["value"] = 0
 
         self.show_frames()
 
@@ -175,6 +175,7 @@ class App:
         self.camera_label.after(20, self.show_frames)
         self.exercise_name = self.feed.current_exercise_name
         self.update_instruction()
+        self.pb["value"] = self.feed.update_pbar()
 
     """
     1. zginanie lewej ręki
@@ -200,18 +201,18 @@ class App:
                 f"Podnoszenie lewej reki do gory. Należy podnosić rękę tak, żeby kąt przy barku wynosił {self.feed.params[2]}, a w łokciu {self.feed.params[3]}.\n Na ten moment, przy barku wynosi {int(self.feed.current_angle_1)}, a przy łokciu {int(self.feed.current_angle_2)}"
         elif self.exercise_name == EXERCISES[3]:
             self.instruction_label["text"] = \
-                "Podnoszenie prawej reki do gory"
+                f"Podnoszenie prawej reki do gory. Należy podnosić rękę tak, żeby kąt przy barku wynosił {self.feed.params[4]}, a w łokciu {self.feed.params[5]}.\n Na ten moment, przy barku wynosi {int(self.feed.current_angle_1)}, a przy łokciu {int(self.feed.current_angle_2)}"
 
         elif self.exercise_name == EXERCISES[4]:
-            self.instruction_label["text"] = "Podnoszenie lewej ręki do poziomu"
+            self.instruction_label["text"] = f"Podnoszenie lewej ręki do poziomu. Bark: {self.feed.params[6]}, łokieć: {self.feed.params[7]}. Obecnie jest:\n Bark: {self.feed.current_angle_1}, łokieć: {self.feed.current_angle_2}"
         elif self.exercise_name == EXERCISES[5]:
-            self.instruction_label["text"] = "Podnoszenie prawej ręki do poziomu"
+            self.instruction_label["text"] = f"Podnoszenie prawej ręki do poziomu. Bark: {self.feed.params[8]}, łokieć: {self.feed.params[9]}. Obecnie jest:\n Bark: {self.feed.current_angle_1}, łokieć: {self.feed.current_angle_2}"
 
         elif self.exercise_name == EXERCISES[6]:
-            self.instruction_label["text"] = "Prayer position"
+            self.instruction_label["text"] = f"Prayer position. Chcemy: Bark: {self.feed.params[10]}, Łokieć: {self.feed.params[11]} \nJest: Bark {self.feed.current_angle_1}, Łokieć: {self.feed.current_angle_2}"
 
         elif self.exercise_name == EXERCISES[7]:
-            self.instruction_label["text"] = "skłon tułowia"
+            self.instruction_label["text"] = f"skłon tułowia. Chcemy: {self.feed.params[12]}, {self.feed.params[13]}. \nMamy: Hands: {self.feed.current_angle_1}, Body: {self.feed.current_angle_2}"
 
         elif self.exercise_name == EXERCISES[8]:
             self.instruction_label["text"] = "Cwiczenia zostaly ukonczone"
@@ -258,6 +259,8 @@ class VidCapt:
         self.current_angle_1 = 0
         self.current_angle_2 = 0
 
+        self.total_execrises_done = 0
+
         try:
             file = open(file=FILE_PATH, mode="r")
             for line in file:
@@ -268,6 +271,9 @@ class VidCapt:
             raise ValueError
 
         self.sslff = self.params[14] #  Sessions Since Last Fully Finished
+
+    def update_pbar(self):
+        return int((self.total_execrises_done / 24) * 100)
 
 
     def update_sslff(self):
@@ -281,46 +287,46 @@ class VidCapt:
     def update_file(self):
         print(self.params)
 
-        if self.params[0] > 40: #>?<
+        if self.params[0] > 42:
             self.params[0] -= 3
 
-        if self.params[1] > 40:
+        if self.params[1] > 42:
             self.params[1] -= 3
 
-        if self.params[2] < 223:
-            self.params[2] += 3
+        if self.params[2] > 52:
+            self.params[2] -= 3
 
-        if self.params[3] < 223:
+        if self.params[3] < 173:
             self.params[3] += 3
 
-        if self.params[4] < 223:
-            self.params[4] += 3
+        if self.params[4] > 52:
+            self.params[4] -= 3
 
-        if self.params[5] < 223:
+        if self.params[5] < 173:
             self.params[5] += 3
 
-        if self.params[6] < 223:
+        if self.params[6] < 88:
             self.params[6] += 3
 
-        if self.params[7] < 223:
+        if self.params[7] < 173:
             self.params[7] += 3
 
-        if self.params[8] < 223:
+        if self.params[8] < 88:
             self.params[8] += 3
 
-        if self.params[9] < 223:
+        if self.params[9] < 173:
             self.params[9] += 3
 
-        if self.params[10] < 223:
+        if self.params[10] < 78:
             self.params[10] += 3
 
-        if self.params[11] < 223:
+        if self.params[11] < 173:
             self.params[11] += 3
 
-        if self.params[12] < 223:
+        if self.params[12] < 223: #TODO
             self.params[12] += 3
 
-        if self.params[13] < 223:
+        if self.params[13] < 223: #TODO
             self.params[13] += 3
 
         self.params[14] = 0
@@ -336,6 +342,8 @@ class VidCapt:
             self.current_exercise_count = 0
             self.skipped = True
             print("Skipped")
+            x = self.total_execrises_done
+            self.total_execrises_done = x + (3 - x % 3)
         else:
             pass
 
@@ -386,6 +394,7 @@ class VidCapt:
                     if self.params[0] == 255:
                         self.current_exercise_name = EXERCISES[1]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 3
                         return None
 
 
@@ -402,6 +411,7 @@ class VidCapt:
                     if angle < self.params[0] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle > 160 and self.stage == "up":
                         self.stage = "down"
@@ -416,6 +426,7 @@ class VidCapt:
                     if self.params[1] == 255:
                         self.current_exercise_name = EXERCISES[2]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 6
                         return None
 
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
@@ -431,6 +442,7 @@ class VidCapt:
                     if angle < self.params[1] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle > 160 and self.stage == "up":
                         self.stage = "down"
@@ -445,6 +457,7 @@ class VidCapt:
                     if self.params[2] == 255 or self.params[3] == 255:
                         self.current_exercise_name = EXERCISES[3]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 9
                         return None
 
                     left_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
@@ -465,6 +478,7 @@ class VidCapt:
                     if angle_left_shoulder < self.params[2] and angle_left_elbow > self.params[3] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_left_shoulder > self.params[2] and left_wrist[1] > left_shoulder[1] and self.stage == "up":
                         self.stage = "down"
@@ -479,6 +493,7 @@ class VidCapt:
                     if self.params[4] == 255 or self.params[5] == 255:
                         self.current_exercise_name = EXERCISES[4]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 12
                         return None
 
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
@@ -499,6 +514,7 @@ class VidCapt:
                     if angle_right_shoulder < self.params[4] and angle_right_elbow > self.params[5] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_right_shoulder > self.params[4] and right_wrist[1] > right_shoulder[1] and self.stage == "up":
                         self.stage = "down"
@@ -511,6 +527,7 @@ class VidCapt:
                     if self.params[6] == 255 or self.params[7] == 255:
                         self.current_exercise_name = EXERCISES[5]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 15
                         return None
 
                     left_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
@@ -532,6 +549,7 @@ class VidCapt:
                     if self.params[6] - 5 < angle_left_shoulder < self.params[6] + 5 and angle_left_elbow > self.params[7] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_left_shoulder < 30 and self.stage == "up": #moze zostac, bo to po prostu opuszczenie reki
                         self.stage = "down"
@@ -546,6 +564,7 @@ class VidCapt:
                     if self.params[8] == 255 or self.params[9] == 255:
                         self.current_exercise_name = EXERCISES[6]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 18
                         return None
 
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
@@ -566,6 +585,7 @@ class VidCapt:
                     if self.params[8] - 5 < angle_right_shoulder < self.params[8] + 5 and angle_right_elbow > self.params[9] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_right_shoulder < 30 and self.stage == "up":
                         self.stage = "down"
@@ -580,6 +600,7 @@ class VidCapt:
                     if self.params[10] == 255 or self.params[11] == 255:
                         self.current_exercise_name = EXERCISES[7]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 21
                         return None
 
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
@@ -600,6 +621,7 @@ class VidCapt:
                     if angle_right_shoulder > self.params[10] and angle_right_elbow > self.params[11] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_right_shoulder < 30 and angle_right_elbow < 90 and self.stage == "up":
                         self.stage = "down"
@@ -612,6 +634,7 @@ class VidCapt:
                     if self.params[12] == 255 or self.params[13] == 255:
                         self.current_exercise_name = EXERCISES[8]
                         self.current_exercise_count = 0
+                        self.total_execrises_done = 24
                         return None
 
                     right_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
@@ -632,6 +655,7 @@ class VidCapt:
                     if angle_hands > 90 and angle_body < 60 and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
+                        self.total_execrises_done += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_hands < 90 and angle_body > 60 and self.stage == "up":
                         self.stage = "down"

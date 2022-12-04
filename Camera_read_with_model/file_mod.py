@@ -1,6 +1,6 @@
 def save_to_file(values):
     try:
-        calibration_file = open("calibration_file_testing.txt", "w")
+        calibration_file = open("exercises_params.txt", "w")
         for param in values:
             calibration_file.write(str(param) + "\n")
         calibration_file.close()
