@@ -1,3 +1,6 @@
+import sys
+import time
+import keyboard
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import ttk
@@ -11,6 +14,17 @@ import numpy as np
 import os
 from imutils.video import VideoStream
 
+EXERCISES = [
+"left_arm_bend",
+"right_arm_bend",
+"left_arm_raise",
+"right_arm_raise",
+"left_arm_level",
+"right_arm_level",
+"prayer_position",
+"lean",
+"done"
+]
 
 nose = None
 left_eye_inner = None
@@ -230,10 +244,60 @@ class VidCapt:
 
         self.current_exercise_count = 0
         self.stage = "down"
-        self.current_exercise_name = "right_arm_raise"
+        self.current_exercise_name = EXERCISES[0]
+
+        self.left_arm_bend_calibration_results = []
+        self.right_arm_bend_calibration_results = []
+        self.left_arm_raise_shoulder_calibration_results = []
+        self.left_arm_raise_elbow_calibration_results = []
+        self.right_arm_raise_shoulder_calibration_results = []
+        self.right_arm_raise_elbow_calibration_results = []
+        self.left_arm_level_shoulder_calibration_results = []
+        self.left_arm_level_elbow_calibration_results = []
+        self.right_arm_level_shoulder_calibration_results = []
+        self.right_arm_level_elbow_results = []
+        self.prayer_position_shoulder_calibration_results = []
+        self.prayer_position_elbow_calibration_results = []
+
+        # self.lean_???_calibration_results = []
+        # self.lean_???_calibration_results = []
+
+        self.skipped = False
+        self.stopped = 0
+        self.current_exercise_temp = None
+
+        self.is_done = False
+
+    def skip_exercise(self):
+        if self.current_exercise_name != EXERCISES[8]:
+            new_index = EXERCISES.index(self.current_exercise_name) + 1
+            self.current_exercise_name = EXERCISES[new_index]
+            self.current_exercise_count = 0
+            self.skipped = True
+            #TODO dodac ze jak skipped gdzies poszlo ,to wynik jest 255 w zapisie
+            print("Skipped")
+        else:
+            pass
+
+    def stop_exercises(self):
+        self.stopped += 1
+        if self.stopped % 2 != 0:
+            self.current_exercise_temp = EXERCISES.index(self.current_exercise_name)
+            self.current_exercise_name = None
+            print("Stopped")
+        else:
+            self.current_exercise_name = EXERCISES[self.current_exercise_temp]
+            print("Resumed")
 
     def release_feed(self):
         self.vid.release()
+
+    def calculate_mean(self, list, reversed=False):
+        list.sort(reverse=reversed)
+        list = list[-10:-5]
+        print(list)
+        mean = sum(list)/len(list)
+        return int(mean)
 
     def get_frame(self): #TODO CHANGE NAME OF THE METHOD
         _, self.cap = self.vid.read()
@@ -251,7 +315,6 @@ class VidCapt:
             frame.flags.writeable = True
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-            # To do wywalenia pojdzie
             self.mp_drawing.draw_landmarks(
                 frame,
                 results.pose_landmarks,
@@ -265,26 +328,26 @@ class VidCapt:
                 def left_arm_bend():
 
                     left_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-                                      landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                                     landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
                     left_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
-                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+                                  landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
                     left_wrist = [landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
-                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+                                  landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
 
                     angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
-                    if angle < 90 and self.stage == "down":
-                        self.stage = "up"
-                        self.current_exercise_count += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
-                    elif angle > 90 and self.stage == "up":
-                        self.stage = "down"
-                        if self.current_exercise_count == 3:
-                            self.current_exercise_name = "right_arm_bend"
-                            self.current_exercise_count = 0
-                    else:
-                        pass
+                    self.left_arm_bend_calibration_results.append(int(angle))
+
+                    if keyboard.is_pressed('space'):
+                        time.sleep(2)
+                        print(self.calculate_mean(self.left_arm_bend_calibration_results, reversed=True))
+                        self.current_exercise_name = EXERCISES[1]
+
+                    if len(self.left_arm_bend_calibration_results) > 50:
+                        self.left_arm_bend_calibration_results.sort(reverse=True)
+                        self.left_arm_bend_calibration_results = self.left_arm_bend_calibration_results[30:]
 
                 def right_arm_bend():
+
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
                                       landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                     right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
@@ -293,19 +356,19 @@ class VidCapt:
                                    landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].y]
 
                     angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
-                    if angle < 90 and self.stage == "down":
-                        self.stage = "up"
-                        self.current_exercise_count += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
-                    elif angle > 90 and self.stage == "up":
-                        self.stage = "down"
-                        if self.current_exercise_count == 3:
-                            self.current_exercise_name = "left_arm_raise"
-                            self.current_exercise_count = 0
-                    else:
-                        pass
+                    self.right_arm_bend_calibration_results.append(int(angle))
+
+                    if keyboard.is_pressed('space'):
+                        time.sleep(2)
+                        print(self.calculate_mean(self.right_arm_bend_calibration_results, reversed=True))
+                        self.current_exercise_name = EXERCISES[1]
+
+                    if len(self.right_arm_bend_calibration_results) > 50:
+                        self.right_arm_bend_calibration_results.sort(reverse=True)
+                        self.right_arm_bend_calibration_results = self.right_arm_bend_calibration_results[30:]
 
                 def left_arm_raise():
+
                     left_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
                     left_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
@@ -318,19 +381,26 @@ class VidCapt:
                     angle_left_shoulder = calculate_angle(left_mouth, left_shoulder, left_elbow)
                     angle_left_elbow = calculate_angle(left_shoulder, left_elbow, left_wrist)
 
-                    if angle_left_shoulder < 90 and angle_left_elbow > 90 and self.stage == "down":
-                        self.stage = "up"
-                        self.current_exercise_count += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
-                    elif angle_left_shoulder > 90 and left_wrist[1] > left_shoulder[1] and self.stage == "up":
-                        self.stage = "down"
-                        if self.current_exercise_count == 3:
-                            self.current_exercise_name = "right_arm_raise"
-                            self.current_exercise_count = 0
-                    else:
-                        pass
+                    self.left_arm_raise_shoulder_calibration_results.append(int(angle))
+                    self.left_arm_raise_elbow_calibration_results.append(int(angle))
+
+                    if keyboard.is_pressed('space'):
+                        time.sleep(2)
+                        print(self.calculate_mean(self.left_arm_raise_shoulder_calibration_results, reversed=True)) #TODO CHECK ALL REVERSED PARAMS FROM DOWN HERE
+                        print(self.calculate_mean(self.left_arm_raise_elbow_calibration_results, reversed=True))
+                        self.current_exercise_name = EXERCISES[2]
+
+                    if len(self.left_arm_raise_calibration_results) > 50:
+                        self.left_arm_raise_shoulder_calibration_results.sort(reverse=True)
+                        self.left_arm_raise_elbow_calibration_results = self.left_arm_raise_elbow_calibration_results[
+                                                                        30:]
+
+                        self.left_arm_raise_shoulder_calibration_results.sort(reverse=True)
+                        self.left_arm_raise_elbow_calibration_results = self.left_arm_raise_elbow_calibration_results[
+                                                                        30:]
 
                 def right_arm_raise():
+
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
                                       landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                     right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
@@ -343,67 +413,101 @@ class VidCapt:
                     angle_right_shoulder = calculate_angle(right_mouth, right_shoulder, right_elbow)
                     angle_right_elbow = calculate_angle(right_shoulder, right_elbow, right_wrist)
 
-                    if angle_right_shoulder < 90 and angle_right_elbow > 90 and self.stage == "down":
-                        self.stage = "up"
-                        self.current_exercise_count += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
-                    elif angle_right_shoulder > 90 and right_wrist[1] > right_shoulder[1] and self.stage == "up":
-                        self.stage = "down"
-                        if self.current_exercise_count == 3:
-                            self.current_exercise_name = "left_arm_level"
-                            self.current_exercise_count = 0
+                    self.right_arm_raise_shoulder_calibration_results.append(int(angle))
+                    self.right_arm_raise_elbow_calibration_results.append(int(angle))
+
+                    if keyboard.is_pressed('space'):
+                        time.sleep(2)
+                        print(self.calculate_mean(self.right_arm_raise_shoulder_calibration_results, reversed=True))
+                        print(self.calculate_mean(self.right_arm_raise_elbow_calibration_results, reversed=True))
+                        self.current_exercise_name = EXERCISES[2]
+
+                    if len(self.right_arm_raise_calibration_results) > 50:
+                        self.right_arm_raise_shoulder_calibration_results.sort(reverse=True)
+                        self.right_arm_raise_elbow_calibration_results = self.right_arm_raise_elbow_calibration_results[
+                                                                        30:]
+
+                        self.right_arm_raise_shoulder_calibration_results.sort(reverse=True)
+                        self.right_arm_raise_elbow_calibration_results = self.right_arm_raise_elbow_calibration_results[
+                                                                        30:]
 
                 def left_arm_level():
+
+                    if self.params[6] == 255 or self.params[7] == 255:
+                        self.current_exercise_name = EXERCISES[5]
+                        self.current_exercise_count = 0
+                        return None
+
                     left_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
                                      landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
                     left_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
                     left_wrist = [landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
                                   landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
-                    left_mouth = [landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT.value].x,
-                                  landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT.value].y]
+                    left_hip = [landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP.value].x,
+                                landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP.value].y]
 
-                    angle_left_shoulder = calculate_angle(left_mouth, left_shoulder, left_elbow)
+                    angle_left_shoulder = calculate_angle(left_hip, left_shoulder, left_elbow)
                     angle_left_elbow = calculate_angle(left_shoulder, left_elbow, left_wrist)
 
-                    if 90 < angle_left_shoulder < 110 and angle_left_elbow > 160 and self.stage == "down": #TODO wrong values
+                    self.current_angle_1 = angle_left_shoulder
+                    self.current_angle_2 = angle_left_elbow
+
+                    if self.params[6] - 5 < angle_left_shoulder < self.params[6] + 5 and angle_left_elbow > self.params[
+                        7] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
-                    elif angle_left_shoulder > 160 and self.stage == "up":
+                    elif angle_left_shoulder < 30 and self.stage == "up":  # moze zostac, bo to po prostu opuszczenie reki
                         self.stage = "down"
                         if self.current_exercise_count == 3:
-                            self.current_exercise_name = "right_arm_level"
+                            self.current_exercise_name = EXERCISES[5]
                             self.current_exercise_count = 0
                     else:
                         pass
 
                 def right_arm_level():
-                    right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
-                                     landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-                    right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
-                                  landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-                    right_wrist = [landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].x,
-                                  landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-                    right_mouth = [landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT.value].x,
-                                  landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT.value].y]
 
-                    angle_right_shoulder = calculate_angle(right_mouth, right_shoulder, right_elbow)
+                    if self.params[8] == 255 or self.params[9] == 255:
+                        self.current_exercise_name = EXERCISES[6]
+                        self.current_exercise_count = 0
+                        return None
+
+                    right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
+                                      landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+                    right_elbow = [landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
+                                   landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+                    right_wrist = [landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].x,
+                                   landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+                    right_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
+                                 landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].y]
+
+                    angle_right_shoulder = calculate_angle(right_hip, right_shoulder, right_elbow)
                     angle_right_elbow = calculate_angle(right_shoulder, right_elbow, right_wrist)
 
-                    if 90 < angle_right_shoulder < 110 and angle_right_elbow > 160 and self.stage == "down":
+                    self.current_angle_1 = angle_right_shoulder
+                    self.current_angle_2 = angle_right_elbow
+
+                    if self.params[8] - 5 < angle_right_shoulder < self.params[8] + 5 and angle_right_elbow > \
+                            self.params[9] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
-                    elif angle_right_shoulder > 160 and self.stage == "up":
+                    elif angle_right_shoulder < 30 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
-                            self.current_exercise_name = "prayer_position"
+                            self.current_exercise_name = EXERCISES[6]
                             self.current_exercise_count = 0
                     else:
                         pass
 
                 def prayer_position():
+
+                    if self.params[10] == 255 or self.params[11] == 255:
+                        self.current_exercise_name = EXERCISES[7]
+                        self.current_exercise_count = 0
+                        return None
+
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
                                       landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
                     right_elbow = [landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
@@ -413,21 +517,30 @@ class VidCapt:
                     right_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
                                  landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].y]
 
-                    angle_right_elbow = calculate_angle(right_shoulder, right_elbow, right_wrist)
                     angle_right_shoulder = calculate_angle(right_hip, right_shoulder, right_elbow)
-                    #UP - kąt pomiędzy łokciami, ramionami i biodrem > 75 i kąt pomiędzy łokieć nadgarstek ramię > 75
-                    #DOWN - kąt pomiędzy łokciami, ramionami i biodrem < 30 i kąt pomiędzy łokieć nadgarstek ramię < 90
-                    if angle_right_shoulder > 75 and angle_right_elbow > 75 and self.stage == "down":
+                    angle_right_elbow = calculate_angle(right_shoulder, right_elbow, right_wrist)
+
+                    self.current_angle_1 = angle_right_shoulder
+                    self.current_angle_2 = angle_right_elbow
+
+                    if angle_right_shoulder > self.params[10] and angle_right_elbow > self.params[
+                        11] and self.stage == "down":
                         self.stage = "up"
                         self.current_exercise_count += 1
                         print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_right_shoulder < 30 and angle_right_elbow < 90 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
-                            self.current_exercise_name = "lean"
+                            self.current_exercise_name = EXERCISES[7]
                             self.current_exercise_count = 0
 
                 def lean():
+
+                    if self.params[12] == 255 or self.params[13] == 255:
+                        self.current_exercise_name = EXERCISES[8]
+                        self.current_exercise_count = 0
+                        return None
+
                     right_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
                                  landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].y]
                     right_shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
@@ -439,8 +552,9 @@ class VidCapt:
 
                     angle_hands = calculate_angle(right_hip, right_shoulder, right_wrist)
                     angle_body = calculate_angle(right_knee, right_hip, right_shoulder)
-                    print(angle_hands)
-                    print(angle_body)
+
+                    self.current_angle_1 = angle_hands
+                    self.current_angle_2 = angle_body
 
                     if angle_hands > 90 and angle_body < 60 and self.stage == "down":
                         self.stage = "up"
@@ -449,38 +563,42 @@ class VidCapt:
                     elif angle_hands < 90 and angle_body > 60 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
-                            self.current_exercise_name = "None"
+                            self.current_exercise_name = EXERCISES[8]
                             self.current_exercise_count = 0
                     else:
                         pass
 
-
-                if self.current_exercise_name == "left_arm_raise":
+                if self.current_exercise_name == EXERCISES[2]:
                     left_arm_raise()
-                elif self.current_exercise_name == "right_arm_raise":
+                elif self.current_exercise_name == EXERCISES[3]:
                     right_arm_raise()
 
-                elif self.current_exercise_name == "left_arm_bend":
+                elif self.current_exercise_name == EXERCISES[0]:
                     left_arm_bend()
-                elif self.current_exercise_name == "right_arm_bend":
+                elif self.current_exercise_name == EXERCISES[1]:
                     right_arm_bend()
 
-                elif self.current_exercise_name == "left_arm_level":
+                elif self.current_exercise_name == EXERCISES[4]:
                     left_arm_level()
-                elif self.current_exercise_name == "right_arm_level":
+                elif self.current_exercise_name == EXERCISES[5]:
                     right_arm_level()
 
-                elif self.current_exercise_name == "prayer_position":
+                elif self.current_exercise_name == EXERCISES[6]:
                     prayer_position()
 
-                elif self.current_exercise_name == "lean":
+                elif self.current_exercise_name == EXERCISES[7]:
                     lean()
 
-                elif self.current_exercise_name == "None":
-                    pass
+                elif self.current_exercise_name == EXERCISES[8]:
+
+                    if self.is_done != True:
+                        self.is_done = True
+                        self.update_sslff()
+                    else:
+                        pass
 
                 else:
-                    print("niby jak")
+                    pass
 
             except:
                 print("'try' failed")

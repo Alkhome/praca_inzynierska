@@ -13,3 +13,16 @@
 92 - lean - [12]
 93 - lean - [13]
 1 - successful sessions since last calibration
+
+self.left_arm_bend_calibration_results = []
+        self.right_arm_bend_calibration_results = []
+        self.left_arm_raise_shoulder_calibration_results = []
+        self.left_arm_raise_elbow_calibration_results = []
+        self.right_arm_raise_shoulder_calibration_results = []
+        self.right_arm_raise_elbow_calibration_results = []
+        self.left_arm_level_shoulder_calibration_results = []
+        self.left_arm_level_elbow_calibration_results = []
+        self.right_arm_level_shoulder_calibration_results = []
+        self.right_arm_level_elbow_results = []
+        self.prayer_position_shoulder_calibration_results = []
+        self.prayer_position_elbow_calibration_results = []
