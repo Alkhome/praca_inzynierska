@@ -1,9 +1,32 @@
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ac purus tempor, tristique est vel, tempor quam. Curabitur gravida tellus efficitur fermentum dictum. Mauris lectus nisl, vestibulum id nisl sodales, aliquam convallis nibh. Cras sit amet velit at nibh aliquam semper et a orci. In hac habitasse platea dictumst. In eleifend auctor euismod. Nullam ligula nulla, posuere sit amet ex et, dignissim commodo justo. Nam consequat consectetur est, vitae sagittis magna porta ac. Maecenas a diam ut urna porttitor dictum. Proin in sapien condimentum ipsum porttitor gravida sit amet quis velit. Cras sit amet ultrices velit, sit amet porttitor erat. Proin enim nisl, pretium ac tincidunt a, rutrum quis tellus.
+Instrukcja obsługi programu:
+Przed rozpoczęciem sesji ćwiczeniowej, upewnij się, że wykonana została kalibracja. Kalibrację wystarczy wykonać raz, jednak można ją wykonywać zawsze, kiedy zajdzie taka potrzeba,
+np. po dłuższej przerwie, nie będziesz w stanie już osiągać takich wyników jak wcześniej.
+Wszystkie przyciski, które znajdują się w programie, działają od razu. Program nie będzie prosił o potwierdzenie, kiedy nacisniesz przycisk powrotu do menu.
+Przycisk "zatrzymaj ćwiczenie" nie powoduje wstrzymania wykrywania obrazu przez kamerę, a jedynie wstrzymuje weryfikację wykonywanych ćwiczeń.
+Jest to przydatne w momencie, kiedy ktoś chce wejść w pole widzenia kamery.
+Przycisk pominięcia ćwiczenia użyty w sesji kalibracyjnej sprawi, że program zrozumie, że nie jesteś w stanie wykonać danego ćwiczenia.
+Będzie ono pomijane w sesji ćwiczniowej aż do momentu, kiedy nie wykonasz ponownej kalibracji.
+Przycisk pominięcia ćwiczenia w sesji ćwiczeniowej nie powoduje usunięcia ćwiczenia z puli, a jedynie pomija to ćwiczenie w danej sesji treningowej.
+Naciśnięcie go spowoduje, że program nie zanotuje, że cała sesja ćwiczeniowa została wykonana poprawnie, co przełoży się na to, że nie będzie zwiększał
+trudności wykonywanych ćwiczeń, aż do momentu, kiedy będziesz w stanie wykonać swobodnie wszystkie ćwiczenia w sesji.
 
-Ut vitae accumsan nisl. Nulla congue dui at urna lobortis, ac pharetra libero varius. Vivamus et ultrices erat. Quisque consectetur imperdiet nunc. Nam maximus aliquam felis non tincidunt. Duis finibus, nulla sit amet auctor dapibus, nulla libero scelerisque augue, et dignissim est erat ultricies lacus. Nunc mattis iaculis ante.
 
-Sed eu orci tincidunt, pellentesque leo non, suscipit leo. Nulla facilisi. Cras ac eleifend mauris, non ullamcorper leo. Mauris eget feugiat neque. Aliquam et suscipit elit. Phasellus et eleifend nulla. Etiam pharetra, turpis vitae rhoncus consectetur, nisl erat efficitur neque, ut lacinia neque mi at lorem. Fusce at neque augue. Quisque a tellus eu est malesuada porttitor. Mauris vitae est ac tellus molestie imperdiet.
+Wskazówki co do ćwiczeń:
+W celu osiągnięcia jak najlepszych rezultatów, postaraj się zapewnić odpowiednie oświetlenie, podczas ćwiczeń. Im ciemniej w pokoju, tym większy problem program będzie miał, by poprawnie wykrywać Twoje
+położenie.
 
-Praesent faucibus nisl eget semper pretium. Etiam at nibh dapibus, lacinia sapien vel, condimentum tellus. Nullam at mauris in purus porttitor faucibus. Vivamus vel nibh a velit vehicula mollis. Ut pellentesque lorem vitae turpis varius, et euismod lorem iaculis. Aenean vulputate porta velit, vel consequat tortor porttitor at. Quisque magna erat, commodo ac lacus vitae, pharetra tempus leo. Nullam eu eros nec risus eleifend mattis nec vel libero.
+Bądź ciągle jedyną osobą w polu widzenia kamery. Pamiętaj o zostawieniu zapasu, kiedy będziesz ćwiczyć.
+Jeśli ćwiczenie wymaga podniesienia ręki do góry, upewnij się, że kamera widzi również obszar ponad Twoją głową.
 
-Suspendisse gravida ac odio quis mollis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed vestibulum mollis malesuada. Fusce iaculis condimentum elit, vitae imperdiet tortor finibus eget. Etiam a enim quam. Donec imperdiet nunc turpis, ac laoreet ante pellentesque vel. Proin maximus nec enim in ultricies. Morbi ac ornare eros. Fusce ipsum orci, sollicitudin vitae ullamcorper sed, bibendum id diam. Praesent lacinia libero nec enim tempus, eget dapibus tortor volutpat. Sed in posuere justo, vitae dapibus diam. Fusce consequat orci non purus ornare maximus. Maecenas venenatis dolor sed metus eleifend, non porttitor dui dignissim.
+Wykonuj ruchy powoli i dokładnie. Twój czas na wykonanie ćwiczeń, jest nieograniczony.
+
+Pamiętaj o oddychaniu, nie wstrzymuj oddechu podczas ćwiczeń. Oddychaj powoli i głęboko, najlepiej przez nos.
+Rozluźnij ramiona - jeśli podczas ćwiczenia podnosisz ramiona, obciążasz mięśnie, które nie powinny być zaangażowane, a to może spowodować sztywność mięśni karku i bóle.
+Utrzymuj głowę i podbródek w neutralnym położeniu - może Ci się wydawać, że podbródek pomaga w podnoszeniu ciężaru, ale jest tak samo jak z ramionami, obciążasz mięśnie, które nie powinny być zaangażowane
+w te ćwiczenia, a ponadto często oznacza to, że wstrzymujesz oddech.
+
+
+Nie zapomnij o piciu wody podczas i po treningu - utrzymywanie dobrego nawodnienia podczas ćwiczeń jest zawsze wskazane. Może pomóc uniknąć bólów głowy i mięśni po ćwiczeniach.
+
+Jeśli wykonywane ćwiczenia będą przychodziły Ci z łatwością, możesz rozważyć używanie ciężarków. Pamiętaj jednak, aby stopniowo zwiększać ich wagę, w celu uniknięcia kontuzji.
+

@@ -5,6 +5,9 @@ import sys
 
 # main menu nigdy nie zamykane i nad tym są tylko wywoływane okna a w poszczegolnych klasach (plikach)
 #niszczyc tkintery uuu #5:21
+import PIL.Image
+from PIL import ImageTk
+
 
 class MainMenuApp:
     def __init__(self, root):
@@ -15,6 +18,12 @@ class MainMenuApp:
         alignstr = '%dx%d+%d+%d' % (screenwidth, screenheight, 0, 0)
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
+
+        self.image = PIL.Image.open("miscellaneous/main_menu.png")
+        resize_image = self.image.resize((int(screenwidth), int(screenheight)))
+        self.img = ImageTk.PhotoImage(resize_image)
+        label_bg = tk.Label(root, image=self.img)
+        label_bg.place(x=0, y=0)
 
         start_exercise_button = tk.Button(root)
         start_exercise_button["activebackground"] = "#955d5d"
@@ -88,7 +97,7 @@ class MainMenuApp:
     def instruction_button_command(self):
         print("INSTRUCTION")
         os.system("python instruction.py")
-        sys.exit(1)
+        sys.exit()
 
     def start_exercise_button_command(self):
         print("START EXERCISES")
