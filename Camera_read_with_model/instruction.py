@@ -3,13 +3,15 @@ import tkinter.font as tkFont
 import tkinter.scrolledtext as st
 
 import os
+import sys
+import subprocess
+import time
 from tkinter import messagebox
 
 
 class InstructionApp:
     def __init__(self, root):
         root.title("Instrukcja")
-        # setting window size
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (screenwidth, screenheight, 0, 0)
@@ -55,7 +57,9 @@ class InstructionApp:
 
     @staticmethod
     def back_to_menu_button_command():
-        os.system("python main_menu.py")
+        subprocess.Popen(["python", "main_menu.py"])
+        time.sleep(5)
+        sys.exit(0)
 
 
 if __name__ == "__main__":

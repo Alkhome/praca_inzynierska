@@ -2,9 +2,9 @@ import tkinter as tk
 import tkinter.font as tkFont
 import os
 import sys
+import subprocess
+import time
 
-# main menu nigdy nie zamykane i nad tym są tylko wywoływane okna a w poszczegolnych klasach (plikach)
-#niszczyc tkintery uuu #5:21
 import PIL.Image
 from PIL import ImageTk
 
@@ -86,23 +86,22 @@ class MainMenuApp:
         exit_button["command"] = self.exit_button_command
 
     def exit_button_command(self):
-        print("EXIT")
-        exit()
+        sys.exit(0)
 
     def calibrate_button_command(self):
-        print("CALIBRATE")
-        os.system("python calibration.py")
-        #sys.exit(0)
+        subprocess.Popen(["python", "calibration.py"])
+        time.sleep(5)
+        sys.exit(0)
 
     def instruction_button_command(self):
-        print("INSTRUCTION")
-        os.system("python instruction.py")
-        sys.exit()
+        subprocess.Popen(["python", "instruction.py"])
+        time.sleep(5)
+        sys.exit(0)
 
     def start_exercise_button_command(self):
-        print("START EXERCISES")
-        os.system("python app_window.py")
-        exit()
+        subprocess.Popen(["python", "app_window.py"])
+        time.sleep(5)
+        sys.exit(0)
 
 
 if __name__ == "__main__":

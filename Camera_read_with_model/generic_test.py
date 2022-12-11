@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import messagebox
@@ -194,7 +195,7 @@ class App:
             self.update_canvas(path="exercises_images_instruction/hand_curl_left.png") #TODO jpg w paincie change, bo odwrotnie pokazuje
         elif self.exercise_name == EXERCISES[1]:
             self.instruction_label["text"] = \
-                f"Zginanie lewej reki w łokciu aż do kąta {self.feed.params[1]}.\n" \
+                f"Zginanie prawej reki w łokciu aż do kąta {self.feed.params[1]}.\n" \
                 f"Na ten moment zginasz rękę w łokciu pod kątem: {int(self.feed.current_angle_1)}\n" \
                 f"Ilość powtórzeń tego ćwiczenia, żeby je zaliczyć, to: {3 - self.feed.current_exercise_count % 3}" \
                 f"\nW celu jak najdokładniejszego weryfikowania ćwiczenia, " \
@@ -288,10 +289,10 @@ class App:
             pass
 
     def return_button_command(self):
-        print("back to menu")
         self.feed.release_feed()
-        os.system("python main_menu.py")
-        sys.exit()
+        subprocess.Popen(["python", "main_menu.py"])
+        time.sleep(5)
+        sys.exit(0)
 
     def stop_button_command(self):
         self.feed.stop_exercises()
@@ -338,7 +339,6 @@ class VidCapt:
             for line in file:
                 self.params.append(int(line.rstrip()))
             file.close()
-            print(self.params)
         except:
             messagebox.showwarning(title="Nie znaleziono pliku po kalibracji",
                                    message="Upewnij się, że wykonałeś kalibrację, zanim rozpoczniesz ćwiczenia.\n"
@@ -360,12 +360,11 @@ class VidCapt:
             fm.save_to_file(self.params)
 
     def update_file(self):
-        print(self.params)
 
-        if self.params[0] > 42:
+        if self.params[0] > 37:
             self.params[0] -= 3
 
-        if self.params[1] > 42:
+        if self.params[1] > 37:
             self.params[1] -= 3
 
         if self.params[2] > 52:
@@ -408,7 +407,6 @@ class VidCapt:
 
         fm.save_to_file(self.params)
 
-        print(self.params)
 
     def skip_exercise(self):
         if self.current_exercise_name != EXERCISES[8]:
@@ -416,7 +414,6 @@ class VidCapt:
             self.current_exercise_name = EXERCISES[new_index]
             self.current_exercise_count = 0
             self.skipped = True
-            print("Skipped")
             x = self.total_exercises_done
             self.total_exercises_done = x + (3 - x % 3)
         else:
@@ -428,11 +425,9 @@ class VidCapt:
             self.current_exercise_temp = EXERCISES.index(self.current_exercise_name)
             self.current_exercise_name = None
             self.is_stopped = True
-            print("Stopped")
         else:
             self.current_exercise_name = EXERCISES[self.current_exercise_temp]
             self.is_stopped = False
-            print("Resumed")
 
     def release_feed(self):
         self.vid.release()
@@ -441,8 +436,6 @@ class VidCapt:
         _, self.cap = self.vid.read()
         frame = cv2.cvtColor(self.cap, cv2.COLOR_BGR2RGB)
         frame = cv2.flip(frame, 1)
-
-
 
         with self.mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
             frame.flags.writeable = False
@@ -489,7 +482,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle > 160 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
@@ -520,7 +512,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle > 160 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
@@ -557,7 +548,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_left_shoulder > self.params[2] and left_wrist[1] > left_shoulder[1] and \
                             self.stage == "up":
                         self.stage = "down"
@@ -595,7 +585,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_right_shoulder > self.params[4] and right_wrist[1] > right_shoulder[1] and \
                             self.stage == "up":
                         self.stage = "down"
@@ -632,7 +621,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_left_shoulder < 30 and self.stage == "up": #moze zostac, bo to po prostu opuszczenie reki
                         self.stage = "down"
                         if self.current_exercise_count == 3:
@@ -669,7 +657,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_right_shoulder < 30 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
@@ -706,7 +693,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_right_shoulder < 30 and angle_right_elbow < 90 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
@@ -740,7 +726,6 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                        print(f"{self.current_exercise_count} udało się wykonać ćwiczenie")
                     elif angle_hands < 90 and angle_body > 80 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
@@ -784,7 +769,7 @@ class VidCapt:
                     pass
 
             except:
-                print("'try' failed")
+                pass
 
         frame = imutils.resize(frame, height=self.height)
         imgtk = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
