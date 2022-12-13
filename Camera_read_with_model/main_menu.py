@@ -1,9 +1,8 @@
+import subprocess
+import sys
+import time
 import tkinter as tk
 import tkinter.font as tkFont
-import os
-import sys
-import subprocess
-import time
 
 import PIL.Image
 from PIL import ImageTk
@@ -67,7 +66,7 @@ class MainMenuApp:
         instruction_button["text"] = "Instrukcja"
         instruction_button["relief"] = "groove"
         instruction_button.place(x=screenwidth * 0.01, y=screenheight * 0.52, width=screenwidth * 0.32,
-                               height=screenheight * 0.1)
+                                 height=screenheight * 0.1)
         instruction_button["command"] = self.instruction_button_command
 
         exit_button = tk.Button(root)

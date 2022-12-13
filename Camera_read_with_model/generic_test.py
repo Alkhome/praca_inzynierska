@@ -1,6 +1,8 @@
 import os
 import sys
 import subprocess
+import time
+
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import messagebox
@@ -19,15 +21,15 @@ import file_mod as fm
 FILE_PATH = "miscellaneous/exercises_params.txt"
 
 EXERCISES = [
-"left_arm_bend",
-"right_arm_bend",
-"left_arm_raise",
-"right_arm_raise",
-"left_arm_level",
-"right_arm_level",
-"prayer_position",
-"lean",
-"done"
+    "left_arm_bend",
+    "right_arm_bend",
+    "left_arm_raise",
+    "right_arm_raise",
+    "left_arm_level",
+    "right_arm_level",
+    "prayer_position",
+    "lean",
+    "done"
 ]
 
 nose = None
@@ -81,7 +83,7 @@ def calculate_angle(a=None, b=None, c=None):
 
 class App:
 
-    def __init__(self, root, vid_src=0):
+    def __init__(self, root):
         root.title("Sesja ćwiczeniowa")
         self.screenwidth = root.winfo_screenwidth()
         self.screenheight = root.winfo_screenheight()
@@ -110,8 +112,8 @@ class App:
         self.instruction_label["justify"] = "center"
         self.instruction_label["text"] = "Instrukcje"
         self.instruction_label["relief"] = "groove"
-        self.instruction_label.place(x=self.screenwidth * 0.01, y=self.screenheight * 0.5, width=self.screenwidth * 0.98,
-                                height=self.screenheight * 0.35)
+        self.instruction_label.place(x=self.screenwidth * 0.01, y=self.screenheight * 0.5,
+                                     width=self.screenwidth * 0.98, height=self.screenheight * 0.35)
 
         return_button = tk.Button(root)
         return_button["activebackground"] = "#955d5d"
@@ -192,7 +194,7 @@ class App:
                 f"zalecane jest stanąć lewym bokiem w stronę kamery" \
                 f"\nIlość powtórzeń, które należy wykonać, żeby zaliczyć to ćwiczenie, to: " \
                 f"{3 - self.feed.current_exercise_count % 3}"
-            self.update_canvas(path="exercises_images_instruction/hand_curl_left.png") #TODO jpg w paincie change, bo odwrotnie pokazuje
+            self.update_canvas(path="exercises_images_instruction/hand_curl_left.png")
         elif self.exercise_name == EXERCISES[1]:
             self.instruction_label["text"] = \
                 f"Zginanie prawej reki w łokciu aż do kąta {self.feed.params[1]}.\n" \
@@ -228,7 +230,7 @@ class App:
                 f"zalecane jest stanąć prawym bokiem w stronę kamery" \
                 f"\nIlość powtórzeń, które należy wykonać, żeby zaliczyć to ćwiczenie, to: " \
                 f"{3 - self.feed.current_exercise_count % 3}"
-            self.update_canvas(path="exercises_images_instruction/hand_rise_right.png") #TODO change jak wyzej
+            self.update_canvas(path="exercises_images_instruction/hand_rise_right.png")
 
         elif self.exercise_name == EXERCISES[4]:
             self.instruction_label["text"] = \
@@ -313,9 +315,9 @@ class VidCapt:
         self.width = int(width * 0.48)
         self.height = int(height * 0.48)
 
-        self.mp_drawing = mp.solutions.drawing_utils  # wizualizacja wykrywania
+        self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
-        self.mp_pose = mp.solutions.pose  # import pose estimation model  (konkretnego)
+        self.mp_pose = mp.solutions.pose
 
         self.current_exercise_count = 0
         self.stage = "down"
@@ -397,11 +399,11 @@ class VidCapt:
         if self.params[11] < 173:
             self.params[11] += 3
 
-        if self.params[12] < 223: #TODO
+        if self.params[12] < 173:
             self.params[12] += 3
 
-        if self.params[13] < 223: #TODO
-            self.params[13] += 3
+        if self.params[13] > 32:
+            self.params[13] -= 3
 
         self.params[14] = 0
 
@@ -432,7 +434,7 @@ class VidCapt:
     def release_feed(self):
         self.vid.release()
 
-    def get_frame(self): #TODO CHANGE NAME OF THE METHOD
+    def get_frame(self):
         _, self.cap = self.vid.read()
         frame = cv2.cvtColor(self.cap, cv2.COLOR_BGR2RGB)
         frame = cv2.flip(frame, 1)
@@ -441,20 +443,16 @@ class VidCapt:
             frame.flags.writeable = False
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # make detection
             results = pose.process(frame)
 
-            # Reverse previous so that opencv can read this (RGB to BGR)
             frame.flags.writeable = True
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-            # To do wywalenia pojdzie
             self.mp_drawing.draw_landmarks(
                 frame,
                 results.pose_landmarks,
                 self.mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())
-            # Extract landmarks
             landmarks = None
             try:
                 landmarks = results.pose_landmarks.landmark
@@ -758,12 +756,12 @@ class VidCapt:
 
                 elif self.current_exercise_name == EXERCISES[8]:
 
-                    if self.is_done != True:
+                    if self.is_done:
+                        pass
+                    else:
                         self.is_done = True
                         if not self.skipped:
                             self.update_sslff()
-                    else:
-                        pass
 
                 else:
                     pass

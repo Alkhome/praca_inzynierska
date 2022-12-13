@@ -1,8 +1,6 @@
-import os
-import sys
 import subprocess
+import sys
 import time
-import keyboard
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import ttk
@@ -11,24 +9,23 @@ import PIL.Image
 import PIL.ImageTk
 import cv2
 import imutils
+import keyboard
 import mediapipe as mp
 import numpy as np
-
 from PIL import ImageTk
 
 import file_mod as fm
-from imutils.video import VideoStream
 
 EXERCISES = [
-"left_arm_bend",
-"right_arm_bend",
-"left_arm_raise",
-"right_arm_raise",
-"left_arm_level",
-"right_arm_level",
-"prayer_position",
-"lean",
-"done"
+    "left_arm_bend",
+    "right_arm_bend",
+    "left_arm_raise",
+    "right_arm_raise",
+    "left_arm_level",
+    "right_arm_level",
+    "prayer_position",
+    "lean",
+    "done"
 ]
 
 nose = None
@@ -82,10 +79,8 @@ def calculate_angle(a=None, b=None, c=None):
 
 class ExerciseApp:
 
-    def __init__(self, root, vid_src=0):
-        # setting title
+    def __init__(self, root):
         root.title("Sesja kalibracyjna")
-        # setting window size
         self.screenwidth = root.winfo_screenwidth()
         self.screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (self.screenwidth, self.screenheight, 0, 0)
@@ -113,8 +108,9 @@ class ExerciseApp:
         self.instruction_label["justify"] = "center"
         self.instruction_label["text"] = "Instrukcje"
         self.instruction_label["relief"] = "groove"
-        self.instruction_label.place(x=self.screenwidth * 0.01, y=self.screenheight * 0.5, width=self.screenwidth * 0.98,
-                                height=self.screenheight * 0.35)
+        self.instruction_label.place(x=self.screenwidth * 0.01, y=self.screenheight * 0.5,
+                                     width=self.screenwidth * 0.98,
+                                     height=self.screenheight * 0.35)
 
         return_button = tk.Button(root)
         return_button["activebackground"] = "#955d5d"
@@ -176,7 +172,6 @@ class ExerciseApp:
         resize_image = self.image.resize((int(self.screenwidth * 0.49), int(self.screenheight * 0.48)))
         self.img = ImageTk.PhotoImage(resize_image)
         self.item_id = self.img_canvas.create_image((0, 0), image=self.img, anchor=tk.NW)
-
 
     def show_frames(self):
         imgtk = self.feed.get_frame()
@@ -246,7 +241,7 @@ class ExerciseApp:
                 f"\na kąt w barkach zbliżony do 90 stopni." \
                 f"\nW celu jak najdokładniejszego weryfikowania poprawności wykonywanego ćwiczenia, \n" \
                 f"zalecane jest stanąć prawym bokiem w stronę kamery\n" \
-                f"Obecnie kąt w barkach wynosi {int(self.feed.current_angle_1)}, "\
+                f"Obecnie kąt w barkach wynosi {int(self.feed.current_angle_1)}, " \
                 f"a w łokciach {int(self.feed.current_angle_2)}."
             self.update_canvas(path="exercises_images_instruction/praise_position.png")
 
@@ -318,7 +313,6 @@ class VidCapt:
 
         self.skipped_exercises = [False] * 8
 
-
         self.stopped = 0
         self.current_exercise_temp = None
         self.total_exercises_done = 0
@@ -358,110 +352,95 @@ class VidCapt:
     def calculate_mean(self, results, reversed=False):
         results.sort(reverse=reversed)
         result = results[5:10]
-        mean = sum(result)/len(result)
+        mean = sum(result) / len(result)
         return int(mean)
 
-    def save_to_file(self): #TODO sprawdzic reversed czy nie trzeba odwrocic
+    def save_to_file(self):
         val0 = self.calculate_mean(self.left_arm_bend_calibration_results, reversed=False)
         if self.skipped_exercises[0]:
             val0 = 255
         elif val0 < 35:
             val0 = 35
-        print(val0)
 
         val1 = self.calculate_mean(self.right_arm_bend_calibration_results, reversed=False)
         if self.skipped_exercises[1]:
             val1 = 255
         elif val1 < 35:
             val1 = 35
-        print(val1)
 
         val2 = self.calculate_mean(self.left_arm_raise_shoulder_calibration_results, reversed=False)
         if self.skipped_exercises[2]:
             val2 = 255
         elif val2 < 50:
             val2 = 50
-        print(val2)
 
         val3 = self.calculate_mean(self.left_arm_raise_elbow_calibration_results, reversed=True)
         if self.skipped_exercises[2]:
             val3 = 255
         elif val3 > 175:
             val3 = 175
-        print(val3)
 
         val4 = self.calculate_mean(self.right_arm_raise_shoulder_calibration_results, reversed=False)
         if self.skipped_exercises[3]:
             val4 = 255
         elif val4 < 50:
             val4 = 50
-        print(val4)
 
         val5 = self.calculate_mean(self.right_arm_raise_elbow_calibration_results, reversed=True)
         if self.skipped_exercises[3]:
             val5 = 255
         elif val5 > 175:
             val5 = 175
-        print(val5)
-        
+
         val6 = self.calculate_mean(self.left_arm_level_shoulder_calibration_results, reversed=True)
         if self.skipped_exercises[4]:
             val6 = 255
         elif val6 > 90:
             val6 = 90
-        print(val6)
 
         val7 = self.calculate_mean(self.left_arm_level_elbow_calibration_results, reversed=True)
         if self.skipped_exercises[4]:
             val7 = 255
         elif val7 > 175:
             val7 = 175
-        print(val7)
-        
+
         val8 = self.calculate_mean(self.right_arm_level_shoulder_calibration_results, reversed=True)
         if self.skipped_exercises[5]:
             val8 = 255
         elif val8 > 90:
             val8 = 90
-        print(val8)
 
         val9 = self.calculate_mean(self.right_arm_level_elbow_calibration_results, reversed=True)
         if self.skipped_exercises[5]:
             val9 = 255
         elif val9 > 175:
             val9 = 175
-        print(val9)
-        
+
         val10 = self.calculate_mean(self.prayer_position_shoulder_calibration_results, reversed=True)
         if self.skipped_exercises[6]:
             val10 = 255
         elif val10 > 80:
             val10 = 80
-        print(val10)
 
         val11 = self.calculate_mean(self.prayer_position_elbow_calibration_results, reversed=True)
         if self.skipped_exercises[6]:
             val11 = 255
         elif val11 > 175:
             val11 = 175
-        print(val11)
 
-        val12 = self.calculate_mean(self.lean_hands_calibration_results, reversed=True)  #TODO max ???
+        val12 = self.calculate_mean(self.lean_hands_calibration_results, reversed=True)
         if self.skipped_exercises[7]:
             val12 = 255
         elif val12 > 175:
             val12 = 175
-        print(val12)
 
-        val13 = self.calculate_mean(self.lean_body_calibration_results, reversed=False)  # TODO max ???
+        val13 = self.calculate_mean(self.lean_body_calibration_results, reversed=False)
         if self.skipped_exercises[7]:
             val13 = 255
-        elif val13 > 175:
-            val13 = 175
+        elif val13 < 30:
+            val13 = 30
 
-        print(val13)
-
-        val14= 0
+        val14 = 0
 
         new_vals_list = [val0, val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14]
         fm.save_to_file(new_vals_list)
