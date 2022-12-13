@@ -203,7 +203,8 @@ class ExerciseApp:
                 f"Rękę wyciągamy przed siebię, a nie w bok." \
                 f"\nW celu jak najdokładniejszego weryfikowania ćwiczenia, " \
                 f"zalecane jest stanąć lewym bokiem w stronę kamery\n" \
-                f"Na ten moment, kąt przy barku wynosi {int(self.feed.current_angle_1)}"
+                f"Na ten moment, kąt przy barku wynosi {int(self.feed.current_angle_1)}, " \
+                f"a w łokciu {int(self.feed.current_angle_2)}"
             self.update_canvas(path="exercises_images_instruction/hand_rise_left.png")
         elif self.exercise_name == EXERCISES[3]:
             self.instruction_label["text"] = \
@@ -212,7 +213,8 @@ class ExerciseApp:
                 f"Rękę wyciągamy przed siebię, a nie w bok." \
                 f"\nW celu jak najdokładniejszego weryfikowania ćwiczenia, " \
                 f"zalecane jest stanąć prawym bokiem w stronę kamery\n" \
-                f"Na ten moment, kąt przy barku wynosi {int(self.feed.current_angle_1)}"
+                f"Na ten moment, kąt przy barku wynosi {int(self.feed.current_angle_1)}, " \
+                f"a w łokciu {int(self.feed.current_angle_2)}"
             self.update_canvas(path="exercises_images_instruction/hand_rise_right.png")
 
         elif self.exercise_name == EXERCISES[4]:
