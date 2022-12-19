@@ -264,7 +264,7 @@ class App:
                 f"Łokcie należy mieć w okolicy brzuchu, a złożone ręce należy mieć jak nabliżej klatki piersiowej.\n" \
                 f"Następnie wyciągamy je przed siebie tak, żeby kąt w barkamch wyniósł {self.feed.params[10]}, " \
                 f"a w łokciach {self.feed.params[11]}.\n Obecnie kąt w barkach wynosi {int(self.feed.current_angle_1)}"\
-                f"a w łokciach {int(self.feed.current_angle_2)}." \
+                f" a w łokciach {int(self.feed.current_angle_2)}." \
                 f"\nW celu jak najdokładniejszego weryfikowania poprawności wykonywanego ćwiczenia, \n" \
                 f"zalecane jest stanąć prawym bokiem w stronę kamery" \
                 f"\nIlość powtórzeń, które należy wykonać, żeby zaliczyć to ćwiczenie, to: " \
@@ -619,7 +619,7 @@ class VidCapt:
                         self.stage = "up"
                         self.current_exercise_count += 1
                         self.total_exercises_done += 1
-                    elif angle_left_shoulder < 30 and self.stage == "up": #moze zostac, bo to po prostu opuszczenie reki
+                    elif angle_left_shoulder < 30 and self.stage == "up":
                         self.stage = "down"
                         if self.current_exercise_count == 3:
                             self.current_exercise_name = EXERCISES[5]
