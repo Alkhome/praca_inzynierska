@@ -4,8 +4,8 @@ def save_to_file(values):
         for param in values:
             calibration_file.write(str(param) + "\n")
         calibration_file.close()
-    except:
-        print("Error occured while trying to save values")
+    except Exception:
+        print("Error occurred while trying to save values")
 
 
 if __name__ == "__main__":

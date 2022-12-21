@@ -743,7 +743,7 @@ class VidCapt:
                 else:
                     pass
 
-            except:
+            except Exception:
                 pass
 
         frame = imutils.resize(frame, height=self.height)

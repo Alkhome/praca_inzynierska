@@ -1,11 +1,9 @@
+import subprocess
+import sys
+import time
 import tkinter as tk
 import tkinter.font as tkFont
 import tkinter.scrolledtext as st
-
-import os
-import sys
-import subprocess
-import time
 from tkinter import messagebox
 
 
@@ -37,7 +35,7 @@ class InstructionApp:
         try:
             with open("miscellaneous/instruction.txt", "r", encoding="utf-8") as file:
                 self.instruction = file.read()
-        except:
+        except Exception:
             messagebox.showerror(title="Nie znaleziono pliku z instrukcją",
                                  message="Program napotkał błąd krytyczny i nie może znaleźć pliku z instrukcją.\n"
                                          "W celu naprawienia tego błędu, zalecamy ponowną instalację oprogramowania\n"

@@ -11,7 +11,6 @@ from PIL import ImageTk
 class MainMenuApp:
     def __init__(self, root):
         root.title("Menu Glowne")
-        # setting window size
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (screenwidth, screenheight, 0, 0)
@@ -84,20 +83,24 @@ class MainMenuApp:
                           height=screenheight * 0.1)
         exit_button["command"] = self.exit_button_command
 
-    def exit_button_command(self):
+    @staticmethod
+    def exit_button_command():
         sys.exit(0)
 
-    def calibrate_button_command(self):
+    @staticmethod
+    def calibrate_button_command():
         subprocess.Popen(["python", "calibration.py"])
         time.sleep(5)
         sys.exit(0)
 
-    def instruction_button_command(self):
+    @staticmethod
+    def instruction_button_command():
         subprocess.Popen(["python", "instruction.py"])
         time.sleep(5)
         sys.exit(0)
 
-    def start_exercise_button_command(self):
+    @staticmethod
+    def start_exercise_button_command():
         subprocess.Popen(["python", "exercising.py"])
         time.sleep(5)
         sys.exit(0)
