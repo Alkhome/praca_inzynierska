@@ -98,7 +98,7 @@ class MainMenuApp:
         sys.exit(0)
 
     def start_exercise_button_command(self):
-        subprocess.Popen(["python", "app_window.py"])
+        subprocess.Popen(["python", "exercising.py"])
         time.sleep(5)
         sys.exit(0)
 

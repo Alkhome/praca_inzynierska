@@ -35,7 +35,7 @@ class InstructionApp:
 
         self.instruction = ""
         try:
-            with open("instruction.txt", "r", encoding="utf-8") as file:
+            with open("miscellaneous/instruction.txt", "r", encoding="utf-8") as file:
                 self.instruction = file.read()
         except:
             messagebox.showerror(title="Nie znaleziono pliku z instrukcją",
