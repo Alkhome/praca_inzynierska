@@ -204,7 +204,6 @@ class App:
                 f"zalecane jest stanąć prawym bokiem w stronę kamery" \
                 f"\nIlość powtórzeń, które należy wykonać, żeby zaliczyć to ćwiczenie, to: " \
                 f"{3 - self.feed.current_exercise_count % 3}"
-            self.update_canvas(path="exercises_images_instruction/hand_curl_left.png")
             self.update_canvas(path="exercises_images_instruction/hand_curl_right.png")
 
         elif self.exercise_name == EXERCISES[2]:
