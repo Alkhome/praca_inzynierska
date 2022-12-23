@@ -9,7 +9,8 @@ Będzie ono pomijane w sesji ćwiczniowej aż do momentu, kiedy nie wykonasz pon
 Przycisk pominięcia ćwiczenia w sesji ćwiczeniowej nie powoduje usunięcia ćwiczenia z puli, a jedynie pomija to ćwiczenie w danej sesji treningowej.
 Naciśnięcie go spowoduje, że program nie zanotuje, że cała sesja ćwiczeniowa została wykonana poprawnie, co przełoży się na to, że nie będzie zwiększał
 trudności wykonywanych ćwiczeń, aż do momentu, kiedy będziesz w stanie wykonać swobodnie wszystkie ćwiczenia w sesji.
-
+W sesji ćwiczeniowej i kalibracyjnej, znajduje się pasek postępu. Jest on umieszczony pod przyciskiem "Zatrzymaj ćwiczenie".
+Informuje Cię on o tym, w jakim % ukończyłeś już daną sesję.
 
 Wskazówki co do ćwiczeń:
 W celu osiągnięcia jak najlepszych rezultatów, postaraj się zapewnić odpowiednie oświetlenie, podczas ćwiczeń. Im ciemniej w pokoju, tym większy problem program będzie miał, by poprawnie wykrywać Twoje
